@@ -1,0 +1,90 @@
+syntax = "proto3";
+
+package dfs_service;
+
+service DFSService {
+    // store files on the server
+    rpc DFSStoreFile(stream StoreRequest) returns (StoreResponse);
+
+    // fetch files from the server
+    rpc DFSGetFile(GetRequest) returns (stream GetResponse);
+
+    // list all files on the server
+    rpc DFSList(ListRequest) returns (ListResponse);
+
+    // get the status of a file on the server
+    rpc DFSStatus(StatusRequest) returns (StatusResponse);
+
+    // request a write lock from the server
+    rpc DFSRequestLock(LockRequest) returns (LockResponse);
+
+    // handle asynchronous file listing requests from a client
+    rpc CallbackList(ListRequest) returns (ListResponse);
+
+    // delete a file from the server
+    rpc DFSDeleteFile(DeleteRequest) returns (DeleteResponse);
+}
+
+// DFSList and CallbackList message structs
+message ListRequest {
+    string name = 1;
+}
+
+message ListResponse {
+    message FileInfo {
+        string filename = 1;
+        int64 mtime = 2;
+    }
+    repeated FileInfo fileinfo = 1;
+}
+
+// DFSStatus message structs
+message StatusRequest {
+    string filename = 1;
+}
+
+message StatusResponse {
+    string filename = 1;
+    int64 size = 2;
+    int64 mtime = 3;
+    int64 ctime = 4;
+    int32 crc = 5;
+}
+
+// DFSGetFile message structs
+message GetRequest {
+    string filename = 1;
+}
+
+message GetResponse {
+    bytes filechunk = 1;
+}
+
+// DFSRequestLock message structs
+message LockRequest {
+    string filename = 1;
+    string cid = 2;
+}
+
+message LockResponse {
+    bool locked = 1;
+}
+
+// DFSStoreFile message structs
+message StoreRequest {
+    string filename = 1;
+    bytes filechunk = 2;
+}
+
+message StoreResponse {
+    // fields
+}
+
+// DFSDeleteFile message structs
+message DeleteRequest {
+    string filename = 1;
+}
+
+message DeleteResponse {
+    // fields
+}
